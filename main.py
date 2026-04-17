@@ -1,7 +1,41 @@
+
 import feedparser
 import os
 import json
 import re
+
+import requests
+from bs4 import BeautifulSoup
+
+def get_jobs_from_duunitori():
+    url = "https://duunitori.fi/tyopaikat?haku=developer"
+
+    response = requests.get(url, headers={
+        "User-Agent": "Mozilla/5.0"
+    })
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    jobs = []
+
+    for job in soup.select("a.job-box__hover"):
+        title = job.select_one(".job-box__title")
+        company = job.select_one(".job-box__company")
+        link = job.get("href")
+
+        if title and link:
+            jobs.append({
+                "title": title.text.strip(),
+                "link": "https://duunitori.fi" + link,
+                "description": company.text.strip() if company else ""
+            })
+
+    return jobs
+def get_all_jobs():
+    rss_jobs = get_jobs_from_rss()
+    duunitori_jobs = get_jobs_from_duunitori()
+
+    return rss_jobs + duunitori_jobs
 
 def clean_html(raw):
     clean = re.sub('<.*?>', '', raw)        # убираем HTML
@@ -119,5 +153,5 @@ def check():
 
 @app.get("/jobs")
 def jobs():
-    jobs = get_jobs_from_rss()
+    jobs = get_all_jobs()
     return jobs
