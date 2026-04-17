@@ -1,5 +1,14 @@
+import feedparser
 import os
 import json
+import re
+
+def clean_html(raw):
+    clean = re.sub('<.*?>', '', raw)        # убираем HTML
+    clean = clean.replace("&nbsp;", " ")    # убираем мусор
+    clean = clean.replace("\n", " ")        # убираем переносы
+    return clean.strip()
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
@@ -79,7 +88,36 @@ def analyze(req: JobRequest):
 
     return parsed
 
+def get_jobs_from_rss():
+    import requests
+
+    url = "https://weworkremotely.com/categories/remote-programming-jobs.rss"
+
+    response = requests.get(url, headers={
+        "User-Agent": "Mozilla/5.0"
+    })
+
+    feed = feedparser.parse(response.text)
+
+    print("ENTRIES:", len(feed.entries))  # ← ОДИН НОРМАЛЬНЫЙ PRINT
+
+    jobs = []
+
+    for entry in feed.entries:
+        jobs.append({
+            "title": entry.title,
+            "link": entry.link,
+            "description": clean_html(entry.summary)[:300]
+        })
+
+    return jobs
+
 # проверка ключа
 @app.get("/check")
 def check():
     return {"key_loaded": bool(os.getenv("OPENAI_API_KEY"))}
+
+@app.get("/jobs")
+def jobs():
+    jobs = get_jobs_from_rss()
+    return jobs
