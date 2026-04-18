@@ -26,7 +26,7 @@ def get_jobs_from_duunitori():
 
         full_link = "https://duunitori.fi" + href
 
-        print(full_link)  ✅ ВНУТРИ БЛОКА, НО РОВНО
+        print(full_link)
 
         try:
             job_page = requests.get(full_link)
