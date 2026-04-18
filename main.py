@@ -15,10 +15,10 @@ def get_jobs_from_duunitori():
     })
 
     soup = BeautifulSoup(response.text, "html.parser")
-    
+
     jobs = []
 
-    for link in soup.find_all("a", href=True):
+    for link in soup.find_all("a", href=True)[:10]:
         href = link["href"]
 
         if "/tyopaikat/tyo/" in href and "lisaa" not in href:
@@ -27,13 +27,36 @@ def get_jobs_from_duunitori():
             if not title or len(title) < 5:
                 continue
 
+            full_link = "https://duunitori.fi" + href
+
+            description = get_job_description(full_link)
+
             jobs.append({
                 "title": title,
-                "link": "https://duunitori.fi" + href,
-                "description": ""
+                "link": full_link,
+                "description": description
             })
 
     return jobs
+
+def get_job_description(url):
+    try:
+        res = requests.get(url, headers={
+            "User-Agent": "Mozilla/5.0"
+        })
+
+        soup = BeautifulSoup(res.text, "html.parser")
+
+        # ищем основной блок текста
+        desc = soup.select_one(".jobad-content, .job-description, .vacancy-description")
+
+        if desc:
+            return desc.text.strip()[:1000]
+
+    except Exception as e:
+        print("DESC ERROR:", e)
+
+    return ""
 
 def get_all_jobs():
     return get_jobs_from_duunitori()
