@@ -18,39 +18,22 @@ def get_jobs_from_duunitori():
 
     jobs = []
 
-for job in soup.select(".job-box__hover"):
-    link = job.get("href")
+    for job in soup.select(".job-box__hover"):
+        link = job.get("href")
 
-    title_el = job.select_one(".job-box__title")
-    company_el = job.select_one(".job-box__company")
+        title_el = job.select_one(".job-box__title")
+        company_el = job.select_one(".job-box__company")
 
-    if not link or not title_el:
-        continue
+        if not link or not title_el:
+            continue
 
-    title = title_el.text.strip()
+        title = title_el.text.strip()
 
-    jobs.append({
-        "title": title,
-        "link": "https://duunitori.fi" + link,
-        "description": company_el.text.strip() if company_el else ""
-    })
-        href = link["href"]
-
-        if "tyopaikat" in href:
-            title = link.text.strip()
-
-            if not title or len(title) < 5:
-                continue
-
-            full_link = "https://duunitori.fi" + href
-
-            description = get_job_description(full_link)
-
-            jobs.append({
-                "title": title,
-                "link": full_link,
-                "description": description
-            })
+        jobs.append({
+            "title": title,
+            "link": "https://duunitori.fi" + link,
+            "description": company_el.text.strip() if company_el else ""
+        })
 
     return jobs
 
