@@ -21,23 +21,25 @@ def get_jobs_from_duunitori():
     for link in soup.find_all("a", href=True):
         href = link["href"]
 
+        # фильтр — только вакансии
+        if "/tyopaikat/tyo/" not in href:
+            continue
+
         title = link.text.strip()
 
-        if "/tyopaikat/tyo/" in href and "Lisää" not in link.text:
+        if len(title) < 10:
+            continue
 
-        title = link.text.strip()
-
-        if len(title) < 5:
+        if "Lisää" in title:
             continue
 
         full_link = "https://duunitori.fi" + href
-
-        print(full_link)
 
         try:
             job_page = requests.get(full_link, headers={
                 "User-Agent": "Mozilla/5.0"
             })
+
             job_soup = BeautifulSoup(job_page.text, "html.parser")
 
             desc_block = job_soup.find("main")
