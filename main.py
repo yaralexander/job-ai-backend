@@ -22,16 +22,16 @@ def get_jobs_from_duunitori():
     href = link["href"]
 
     if "/tyopaikat/tyo/" in href and "lisaa" not in href:
-        title = link.text.strip()
+    title = link.text.strip()
 
-        if len(title) < 5:
-            continue
+    if not title or len(title) < 5:
+        continue
 
-        jobs.append({
-            "title": title,
-            "link": "https://duunitori.fi" + href,
-            "description": ""
-        })
+    jobs.append({
+        "title": title,
+        "link": "https://duunitori.fi" + href,
+        "description": ""
+    })
 
     return jobs[:20]
 
