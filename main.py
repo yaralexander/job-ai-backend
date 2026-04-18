@@ -19,43 +19,34 @@ def get_jobs_from_duunitori():
     jobs = []
 
     for link in soup.find_all("a", href=True):
-        href = link["href"]
+    href = link["href"]
 
-        if "/tyopaikat/tyo/" in href and "lisaa" not in href:
-            title = link.text.strip()
+    if "/tyopaikat/tyo/" in href:
+        title = link.text.strip()
 
-            if len(title) < 5:
-                continue
+        full_link = "https://duunitori.fi" + href
 
-            full_link = "https://duunitori.fi" + href
+        print(full_link)  ✅ ВНУТРИ БЛОКА, НО РОВНО
 
-            # 👉 ВТОРОЙ ЗАПРОС (самое важное)
-try:
-    job_page = requests.get(full_link, headers={
-        "User-Agent": "Mozilla/5.0"
-    })
+        try:
+            job_page = requests.get(full_link)
+            job_soup = BeautifulSoup(job_page.text, "html.parser")
 
-    job_soup = BeautifulSoup(job_page.text, "html.parser")
+            desc_block = job_soup.find("main")
 
-    desc_block = job_soup.find("main")
+            if desc_block:
+                description = desc_block.get_text().strip()
+            else:
+                description = ""
 
-    if desc_block:
-        description = desc_block.get_text(separator=" ").strip()[:1000]
-    else:
-        description = ""
+        except:
+            description = ""
 
-except:
-    description = ""
-                
-            print(full_link)
-            print(description[:200])
-
-            jobs.append({
-                "title": title,
-                "link": full_link,
-                "description": description
-            })
-
+        jobs.append({
+            "title": title,
+            "link": full_link,
+            "description": description
+        })
     return jobs
 
 def get_job_description(url):
