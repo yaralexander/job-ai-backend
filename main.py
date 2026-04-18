@@ -18,18 +18,20 @@ def get_jobs_from_duunitori():
 
     jobs = []
 
-    for link in soup.find_all("a", href=True):
-        href = link["href"]
+   for link in soup.find_all("a", href=True):
+    href = link["href"]
 
-        if "/tyopaikat/tyo/" in href:
-            title = link.text.strip()
+    if "/tyopaikat/tyo/" in href and "lisaa" not in href:
+        title = link.text.strip()
 
-            if title:
-                jobs.append({
-                    "title": title,
-                    "link": "https://duunitori.fi" + href,
-                    "description": ""
-                })
+        if len(title) < 5:
+            continue
+
+        jobs.append({
+            "title": title,
+            "link": "https://duunitori.fi" + href,
+            "description": ""
+        })
 
     return jobs[:20]
 
@@ -155,5 +157,4 @@ def check():
 
 @app.get("/jobs")
 def jobs():
-    jobs = get_all_jobs()
-    return jobs
+    return get_jobs_from_duunitori()
