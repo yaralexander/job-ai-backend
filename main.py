@@ -38,13 +38,19 @@ def get_jobs_from_duunitori():
                 job_soup = BeautifulSoup(job_page.text, "html.parser")
 
                 # пробуем найти описание
-                desc_block = job_soup.select_one(".job-description, .description, #job-description")
+                desc_block = job_soup.find("main")
 
-                description = desc_block.text.strip()[:1000] if desc_block else ""
+                if desc_block:
+                    description = desc_block.get_text(separator=" ").strip()[:1000]
+                else:
+                    description = ""
 
-            except:
-                description = ""
-
+                except:
+                    description = ""
+                
+            print(full_link)
+            print(description[:200])
+            
             jobs.append({
                 "title": title,
                 "link": full_link,
