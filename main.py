@@ -18,7 +18,7 @@ def get_jobs_from_duunitori():
 
     jobs = []
 
-    for job in soup.select(".job-box__hover"):
+for job in soup.select(".job-box__hover"):
     link = job.get("href")
 
     title_el = job.select_one(".job-box__title")
