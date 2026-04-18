@@ -21,8 +21,9 @@ def get_jobs_from_duunitori():
     for link in soup.find_all("a", href=True):
         href = link["href"]
 
-        if "/tyopaikat/tyo/" not in href:
-            continue
+        title = link.text.strip()
+
+        if "/tyopaikat/tyo/" in href and "Lisää" not in link.text:
 
         title = link.text.strip()
 
