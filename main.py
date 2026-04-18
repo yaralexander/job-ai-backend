@@ -36,10 +36,7 @@ def get_jobs_from_duunitori():
     return jobs[:20]
 
 def get_all_jobs():
-    rss_jobs = get_jobs_from_rss()
-    duunitori_jobs = get_jobs_from_duunitori()
-
-    return rss_jobs + duunitori_jobs
+    return get_jobs_from_duunitori()
 
 def clean_html(raw):
     clean = re.sub('<.*?>', '', raw)        # убираем HTML
