@@ -27,10 +27,28 @@ def get_jobs_from_duunitori():
             if len(title) < 5:
                 continue
 
+            full_link = "https://duunitori.fi" + href
+
+            # 👉 ВТОРОЙ ЗАПРОС (самое важное)
+            try:
+                job_page = requests.get(full_link, headers={
+                    "User-Agent": "Mozilla/5.0"
+                })
+
+                job_soup = BeautifulSoup(job_page.text, "html.parser")
+
+                # пробуем найти описание
+                desc_block = job_soup.select_one(".job-description, .description, #job-description")
+
+                description = desc_block.text.strip()[:1000] if desc_block else ""
+
+            except:
+                description = ""
+
             jobs.append({
                 "title": title,
-                "link": "https://duunitori.fi" + href,
-                "description": ""
+                "link": full_link,
+                "description": description
             })
 
     return jobs
